@@ -17,7 +17,9 @@
       "routePrefix": "api",
       "cors": {
         "allowedOrigins": [
-          "https://your-vercel-app-url.vercel.app"
+          "https://screenshot-service-backend.azurewebsites.net",
+          "http://localhost:5173",
+          "http://localhost:3000"
         ],
         "allowedMethods": ["GET", "POST"],
         "allowedHeaders": ["*"],

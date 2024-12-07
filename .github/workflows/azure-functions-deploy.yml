@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_NAME: screenshot-service    # set this to your application's name
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'          # set this to the path to your function app project
-  NODE_VERSION: '20.x'                         # set this to the node version to use
+  AZURE_FUNCTIONAPP_NAME: screenshot-service-backend    # your function app name
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'                  # set this to the path to your function app project
+  NODE_VERSION: '20.x'                                 # set this to the node version to use
 
 jobs:
   build-and-deploy:
