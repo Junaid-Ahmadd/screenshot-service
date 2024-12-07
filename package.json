@@ -4,6 +4,9 @@
   "type": "module",
   "description": "",
   "main": "server.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "start": "func start",
     "test": "echo \"No tests yet\""
