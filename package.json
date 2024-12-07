@@ -4,21 +4,23 @@
   "type": "module",
   "description": "",
   "main": "server.js",
-  "engines": {
-    "node": ">=20.0.0"
-  },
   "scripts": {
     "start": "func start",
-    "test": "echo \"No tests yet\""
+    "test": "echo \"No tests yet...\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@azure/functions": "^4.0.0",
-    "playwright": "^1.37.1"
+    "playwright": "^1.40.1",
+    "playwright-chromium": "^1.40.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.40.1",
     "azure-functions-core-tools": "^4.x"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
