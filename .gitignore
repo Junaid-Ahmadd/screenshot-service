@@ -1,7 +1,6 @@
 node_modules
-local.settings.json
-.env
-.env.local
+
+
 .DS_Store
 *.log
 dist

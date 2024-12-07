@@ -11,5 +11,18 @@
   "extensionBundle": {
     "id": "Microsoft.Azure.Functions.ExtensionBundle",
     "version": "[4.*, 5.0.0)"
+  },
+  "extensions": {
+    "http": {
+      "routePrefix": "api",
+      "cors": {
+        "allowedOrigins": [
+          "https://your-vercel-app-url.vercel.app"
+        ],
+        "allowedMethods": ["GET", "POST"],
+        "allowedHeaders": ["*"],
+        "maxAge": 86400
+      }
+    }
   }
 }
