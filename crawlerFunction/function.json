@@ -16,5 +16,6 @@
       "name": "$return"
     }
   ],
-  "scriptFile": "server.js"
+  "scriptFile": "index.js",
+  "entryPoint": "default"
 }

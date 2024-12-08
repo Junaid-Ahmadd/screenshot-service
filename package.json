@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
-  "main": "server.js",
   "scripts": {
     "start": "func start"
   },
@@ -11,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/functions": "^4.0.0",
     "playwright-chromium": "^1.40.1"
   },
   "devDependencies": {
