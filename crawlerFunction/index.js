@@ -8,7 +8,7 @@ async function initBrowser() {
     if (!browser) {
       console.log('Launching browser...');
       browser = await chromium.launch({
-        args: ['--no-sandbox'],
+        args: ['--no-sandbox', '--disable-dev-shm-usage'],
         chromiumSandbox: false,
         headless: true
       });

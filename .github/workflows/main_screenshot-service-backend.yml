@@ -47,8 +47,5 @@ jobs:
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B2EE25F447F945F98AAB6BA04A7B8FDE }}
-          app-settings: |
-            {
-              "PLAYWRIGHT_BROWSERS_PATH": "/home/site/wwwroot/node_modules/playwright-chromium/.local-browsers",
-              "WEBSITE_RUN_FROM_PACKAGE": "1"
-            }
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
