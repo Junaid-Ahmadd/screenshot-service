@@ -5,15 +5,16 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "methods": ["post"],
+      "methods": [
+        "post"
+      ],
       "route": "crawl"
     },
     {
       "type": "http",
       "direction": "out",
-      "name": "res"
+      "name": "$return"
     }
   ],
-  "functionTimeout": "00:10:00",
-  "memorySize": 1536
+  "scriptFile": "index.js"
 }
