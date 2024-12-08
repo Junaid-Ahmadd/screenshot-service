@@ -1,4 +1,4 @@
-import { chromium } from 'playwright';
+import { chromium } from 'playwright-chromium';
 import { CrawlerQueue } from '../lib/crawler.js';
 
 let browser = null;
@@ -8,7 +8,13 @@ async function initBrowser() {
     if (!browser) {
       console.log('Launching browser...');
       browser = await chromium.launch({
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu'
+        ],
+        chromiumSandbox: false
       });
       console.log('Browser launched successfully');
     }
