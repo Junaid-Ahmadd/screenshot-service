@@ -7,21 +7,10 @@ async function initBrowser() {
   try {
     if (!browser) {
       console.log('Launching browser...');
-      const executablePath = process.env.PLAYWRIGHT_BROWSERS_PATH 
-        ? `${process.env.PLAYWRIGHT_BROWSERS_PATH}/chromium/chrome-linux/chrome`
-        : undefined;
-      
-      console.log('Executable path:', executablePath);
-      
       browser = await chromium.launch({
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu'
-        ],
+        args: ['--no-sandbox'],
         chromiumSandbox: false,
-        executablePath
+        headless: true
       });
       console.log('Browser launched successfully');
     }
