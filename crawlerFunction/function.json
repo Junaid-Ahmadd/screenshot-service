@@ -16,5 +16,5 @@
       "name": "$return"
     }
   ],
-  "scriptFile": "index.js"
+  "scriptFile": "server.js"
 }
