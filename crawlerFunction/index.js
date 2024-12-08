@@ -1,6 +1,7 @@
 import { chromium } from 'playwright-chromium';
 import { CrawlerQueue } from '../lib/crawler.js';
 import { readdirSync } from 'fs';
+import { join } from 'path';
 
 let browser = null;
 
@@ -14,11 +15,16 @@ async function initBrowser() {
       console.log('Platform:', process.platform);
       console.log('Arch:', process.arch);
 
+      const browserPath = join(process.cwd(), '.playwright', 'browsers');
+      console.log('Browser path:', browserPath);
+      console.log('Browser directory contents:', readdirSync(browserPath));
+
       console.log('Launching browser...');
       browser = await chromium.launch({
         args: ['--no-sandbox', '--disable-dev-shm-usage'],
         chromiumSandbox: false,
-        headless: true
+        headless: true,
+        executablePath: join(browserPath, 'chromium-1148', 'chrome-linux', 'chrome')
       });
       console.log('Browser launched successfully');
     }
