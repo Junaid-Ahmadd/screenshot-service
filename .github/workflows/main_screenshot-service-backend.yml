@@ -39,11 +39,10 @@ jobs:
           npx playwright install chromium
           npx playwright install-deps chromium
 
-      - name: Configure Azure Function Settings
-        uses: azure/CLI@v1
+      - name: Azure Login
+        uses: azure/login@v1
         with:
-          inlineScript: |
-            az functionapp config appsettings set --name screenshot-service-backend --resource-group screenshot-service-backend --settings PLAYWRIGHT_BROWSERS_PATH=/home/site/wwwroot/node_modules/playwright-chromium/.local-browsers WEBSITE_RUN_FROM_PACKAGE=1
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
@@ -53,3 +52,8 @@ jobs:
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B2EE25F447F945F98AAB6BA04A7B8FDE }}
+          app-settings: |
+            {
+              "PLAYWRIGHT_BROWSERS_PATH": "/home/site/wwwroot/node_modules/playwright-chromium/.local-browsers",
+              "WEBSITE_RUN_FROM_PACKAGE": "1"
+            }
