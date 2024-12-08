@@ -1,5 +1,6 @@
 import { chromium } from 'playwright-chromium';
 import { CrawlerQueue } from '../lib/crawler.js';
+import { readdirSync } from 'fs';
 
 let browser = null;
 
@@ -8,7 +9,7 @@ async function initBrowser() {
     if (!browser) {
       console.log('Environment info:');
       console.log('Current directory:', process.cwd());
-      console.log('Directory contents:', require('fs').readdirSync(process.cwd()));
+      console.log('Directory contents:', readdirSync(process.cwd()));
       console.log('Node version:', process.version);
       console.log('Platform:', process.platform);
       console.log('Arch:', process.arch);
