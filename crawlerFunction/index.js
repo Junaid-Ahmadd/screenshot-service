@@ -6,6 +6,13 @@ let browser = null;
 async function initBrowser() {
   try {
     if (!browser) {
+      console.log('Environment info:');
+      console.log('Current directory:', process.cwd());
+      console.log('Directory contents:', require('fs').readdirSync(process.cwd()));
+      console.log('Node version:', process.version);
+      console.log('Platform:', process.platform);
+      console.log('Arch:', process.arch);
+
       console.log('Launching browser...');
       browser = await chromium.launch({
         args: ['--no-sandbox', '--disable-dev-shm-usage'],
@@ -16,8 +23,12 @@ async function initBrowser() {
     }
     return browser;
   } catch (error) {
-    console.error('Failed to launch browser:', error);
-    throw new Error(`Browser launch failed: ${error.message}\nStack: ${error.stack}`);
+    console.error('Failed to launch browser. Error details:');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Error name:', error.name);
+    if (error.code) console.error('Error code:', error.code);
+    throw error;
   }
 }
 
@@ -44,8 +55,9 @@ export default async function (context, req) {
       PWD: process.cwd()
     });
 
+    context.log('Initializing browser');
     const browser = await initBrowser();
-    context.log('Browser initialized');
+    context.log('Browser initialized successfully');
 
     const browserContext = await browser.newContext();
     context.log('Browser context created');
@@ -111,6 +123,12 @@ export default async function (context, req) {
         processedPages++;
       } catch (error) {
         context.log.error(`Error processing ${next.url}: ${error.message}`);
+        context.log.error('Error details:');
+        context.log.error('Message:', error.message);
+        context.log.error('Stack:', error.stack);
+        context.log.error('Name:', error.name);
+        if (error.code) context.log.error('Code:', error.code);
+        
         results.errors.push({
           url: next.url,
           error: error.message
@@ -126,13 +144,28 @@ export default async function (context, req) {
       body: results
     };
   } catch (error) {
-    context.log.error('Function failed:', error);
+    context.log.error('Function failed with error:');
+    context.log.error('Message:', error.message);
+    context.log.error('Stack:', error.stack);
+    context.log.error('Name:', error.name);
+    if (error.code) context.log.error('Code:', error.code);
+    
     return {
       status: 500,
-      body: { 
-        error: "Internal server error",
-        details: error.message
+      body: {
+        error: 'Internal server error',
+        details: error.message,
+        stack: error.stack
       }
     };
+  } finally {
+    if (browser) {
+      try {
+        await browser.close();
+        context.log('Browser closed successfully');
+      } catch (error) {
+        context.log.error('Error closing browser:', error);
+      }
+    }
   }
 }
