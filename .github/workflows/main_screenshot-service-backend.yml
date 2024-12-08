@@ -34,6 +34,17 @@ jobs:
           npm run test --if-present
           popd
 
+      - name: Install Playwright Browser
+        run: |
+          npx playwright install chromium
+          npx playwright install-deps chromium
+
+      - name: Configure Azure Function Settings
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az functionapp config appsettings set --name screenshot-service-backend --resource-group screenshot-service-backend --settings PLAYWRIGHT_BROWSERS_PATH=/home/site/wwwroot/node_modules/playwright-chromium/.local-browsers WEBSITE_RUN_FROM_PACKAGE=1
+
       - name: 'Run Azure Functions Action'
         uses: Azure/functions-action@v1
         id: fa

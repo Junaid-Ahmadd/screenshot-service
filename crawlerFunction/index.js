@@ -7,6 +7,12 @@ async function initBrowser() {
   try {
     if (!browser) {
       console.log('Launching browser...');
+      const executablePath = process.env.PLAYWRIGHT_BROWSERS_PATH 
+        ? `${process.env.PLAYWRIGHT_BROWSERS_PATH}/chromium/chrome-linux/chrome`
+        : undefined;
+      
+      console.log('Executable path:', executablePath);
+      
       browser = await chromium.launch({
         args: [
           '--no-sandbox',
@@ -14,14 +20,15 @@ async function initBrowser() {
           '--disable-dev-shm-usage',
           '--disable-gpu'
         ],
-        chromiumSandbox: false
+        chromiumSandbox: false,
+        executablePath
       });
       console.log('Browser launched successfully');
     }
     return browser;
   } catch (error) {
     console.error('Failed to launch browser:', error);
-    throw error;
+    throw new Error(`Browser launch failed: ${error.message}\nStack: ${error.stack}`);
   }
 }
 
@@ -42,6 +49,11 @@ export default async function (context, req) {
     const maxPages = req.body.maxPages || 20;
 
     context.log(`Processing request for URL: ${startUrl}, maxDepth: ${maxDepth}, maxPages: ${maxPages}`);
+    context.log('Environment:', {
+      PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH,
+      NODE_VERSION: process.version,
+      PWD: process.cwd()
+    });
 
     const browser = await initBrowser();
     context.log('Browser initialized');
