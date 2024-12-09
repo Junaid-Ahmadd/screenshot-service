@@ -100,7 +100,7 @@ export default async function (context, req) {
           quality: 80,
           fullPage: true
         });
-
+        context.log(`Screenshot taken for ${next.url}`);
         results.screenshots.push({
           url: next.url,
           depth: next.depth,
