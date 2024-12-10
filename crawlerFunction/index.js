@@ -76,7 +76,7 @@ export default async function (context, req) {
     const browserContext = await browser.newContext();
     context.log('Browser context created');
 
-    const crawler = new CrawlerQueue(5, maxDepth);
+    const crawler = new CrawlerQueue(10, maxDepth);
     crawler.setBaseUrl(startUrl);
 
     const results = {
