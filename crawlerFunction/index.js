@@ -55,6 +55,13 @@ export default async function (context, req) {
     const maxDepth = req.body.maxDepth || 3;
     const maxPages = req.body.maxPages || 20;
 
+    context.log('Request body:', req.body);
+    context.log('Request parameters:', {
+      url: startUrl,
+      maxDepth: maxDepth,
+      maxPages: maxPages
+    });
+    context.log(`Start URL: ${startUrl}, Max Depth: ${maxDepth}, Max Pages: ${maxPages}`);
     context.log(`Processing request for URL: ${startUrl}, maxDepth: ${maxDepth}, maxPages: ${maxPages}`);
     context.log('Environment:', {
       PLAYWRIGHT_BROWSERS_PATH: process.env.PLAYWRIGHT_BROWSERS_PATH,
@@ -94,13 +101,14 @@ export default async function (context, req) {
           timeout: 30000 
         });
 
-        // Take screenshot
+        context.log(`Taking screenshot for URL: ${next.url}`);
         const screenshot = await page.screenshot({
           type: 'jpeg',
           quality: 80,
           fullPage: true
         });
         context.log(`Screenshot taken for ${next.url}`);
+        context.log(`Screenshot saved for ${next.url}`);
         results.screenshots.push({
           url: next.url,
           depth: next.depth,
@@ -145,6 +153,10 @@ export default async function (context, req) {
 
     await browserContext.close();
     context.log('Crawler completed successfully');
+    context.log('Crawler finished processing all pages');
+    context.log('Crawler took screenshots for all pages');
+    context.log('Crawler completed in ' + (new Date().getTime() - context.startTime) + 'ms');
+    context.log('Crawler results:', results);
 
     return {
       status: 200,
