@@ -52,7 +52,7 @@ export default async function (context, req) {
     }
 
     const startUrl = req.body.url;
-    const maxDepth = req.body.maxDepth || 3;
+    const maxDepth = req.body.maxDepth || 4;
     const maxPages = req.body.maxPages || 20;
 
     context.log('Request body:', req.body);
