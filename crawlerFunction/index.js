@@ -1,6 +1,28 @@
+import { chromium } from 'playwright-chromium';
+import { CrawlerQueue } from '../lib/crawler.js';
+import { readdirSync } from 'fs';
+import { join } from 'path';
+
+async function initBrowser() {
+    try {
+        console.log('Launching brand new browser for this specific request');
+        const browserInstance = await chromium.launch({
+            args: ['--no-sandbox', '--disable-dev-shm-usage'],
+            chromiumSandbox: false,
+            headless: true,
+            executablePath: join(process.cwd(), '.playwright', 'browsers', 'chromium-1148', 'chrome-linux', 'chrome')
+        });
+        return browserInstance;
+    } catch (error) {
+        console.error('Failed to launch browser for this specific request:', error);
+        throw error;
+    }
+}
+
 export default async function (context, req) {
     context.log('Starting crawler function with SSE support');
 
+    // Extract the URL from query parameters
     const startUrl = req.query.url; // Get URL from query string
     if (!startUrl) {
         context.log.error('No URL provided in request query');
@@ -30,20 +52,24 @@ export default async function (context, req) {
     };
 
     try {
+        // Initialize the browser
         const browser = await initBrowser();
         context.log('Browser initialized successfully');
         sendSSE({ message: 'Browser initialized successfully' });
 
+        // Create a new browser context
         const browserContext = await browser.newContext();
         context.log('Browser context created');
         sendSSE({ message: 'Browser context created' });
 
+        // Set up the crawler
         const crawler = new CrawlerQueue(10, maxDepth);
         crawler.setBaseUrl(startUrl);
 
         let processedPages = 0;
         crawler.addToQueue(startUrl, 0);
 
+        // Crawl the website
         while (crawler.canProcess() && processedPages < maxPages) {
             const next = crawler.getNext();
             if (!next) break;
@@ -53,11 +79,13 @@ export default async function (context, req) {
                 context.log(`Processing page ${processedPages + 1}/${maxPages}: ${next.url}`);
                 sendSSE({ status: 'processing', url: next.url });
 
+                // Go to the page and wait until the network is idle
                 await page.goto(next.url, {
                     waitUntil: 'networkidle',
                     timeout: 30000
                 });
 
+                // Take a screenshot of the page
                 const screenshot = await page.screenshot({
                     type: 'jpeg',
                     quality: 80,
@@ -71,6 +99,7 @@ export default async function (context, req) {
                         .filter((href) => href && !href.startsWith('javascript:'));
                 });
 
+                // Add valid links to the crawler queue
                 for (const link of links) {
                     if (crawler.isValidUrl(link)) {
                         const normalizedUrl = crawler.normalizeUrl(link);
@@ -80,8 +109,10 @@ export default async function (context, req) {
                     }
                 }
 
+                // Close the page
                 await page.close();
 
+                // Send SSE for the processed page
                 sendSSE({
                     status: 'success',
                     url: next.url,
@@ -101,6 +132,7 @@ export default async function (context, req) {
             }
         }
 
+        // Close the browser context
         await browserContext.close();
         context.log('Crawler completed successfully');
         sendSSE({ message: 'Crawler completed successfully' });
@@ -108,6 +140,7 @@ export default async function (context, req) {
         context.log.error('Crawler failed:', error);
         sendSSE({ status: 'error', message: error.message });
     } finally {
+        // End the response
         context.res.end();
     }
 }
