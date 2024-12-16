@@ -12,6 +12,7 @@ async function initBrowser() {
             headless: true,
             executablePath: join(process.cwd(), '.playwright', 'browsers', 'chromium-1148', 'chrome-linux', 'chrome')
         });
+        console.log('Browser launched successfully');
         return browserInstance;
     } catch (error) {
         console.error('Failed to launch browser for this specific request:', error);
@@ -35,6 +36,9 @@ export default async function (context, req) {
 
     const maxDepth = req.query.maxDepth || 3;
     const maxPages = req.query.maxPages || 20;
+
+    // Log the received parameters
+    context.log(`Received parameters: URL: ${startUrl}, Max Depth: ${maxDepth}, Max Pages: ${maxPages}`);
 
     // Set up the SSE headers
     context.res = {
@@ -83,6 +87,14 @@ export default async function (context, req) {
                 await page.goto(next.url, {
                     waitUntil: 'networkidle',
                     timeout: 30000
+                }).catch(err => {
+                    context.log.error(`Error loading page ${next.url}: ${err.message}`);
+                    sendSSE({
+                        status: 'error',
+                        url: next.url,
+                        error: `Failed to load page: ${err.message}`
+                    });
+                    throw err;
                 });
 
                 // Take a screenshot of the page
@@ -142,5 +154,6 @@ export default async function (context, req) {
     } finally {
         // End the response
         context.res.end();
+        context.log('Response ended');
     }
 }
