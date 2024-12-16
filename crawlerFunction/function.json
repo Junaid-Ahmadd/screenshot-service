@@ -6,9 +6,9 @@
       "direction": "in",
       "name": "req",
       "methods": [
-        "post"
+        "get"  // Only handle GET for SSE
       ],
-      "route": "crawl"
+      "route": "crawl"  // Keep the route as /crawl
     },
     {
       "type": "http",
