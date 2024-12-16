@@ -1,39 +1,18 @@
-import { chromium } from 'playwright-chromium';
-import { CrawlerQueue } from '../lib/crawler.js';
-import { readdirSync } from 'fs';
-import { join } from 'path';
-
-async function initBrowser() {
-    try {
-        console.log('Launching brand new browser for this specific request');
-        const browserInstance = await chromium.launch({
-            args: ['--no-sandbox', '--disable-dev-shm-usage'],
-            chromiumSandbox: false,
-            headless: true,
-            executablePath: join(process.cwd(), '.playwright', 'browsers', 'chromium-1148', 'chrome-linux', 'chrome')
-        });
-        return browserInstance;
-    } catch (error) {
-        console.error('Failed to launch browser for this specific request:', error);
-        throw error;
-    }
-}
-
 export default async function (context, req) {
     context.log('Starting crawler function with SSE support');
 
-    if (!req.body || !req.body.url) {
-        context.log.error('No URL provided in request body');
+    const startUrl = req.query.url; // Get URL from query string
+    if (!startUrl) {
+        context.log.error('No URL provided in request query');
         context.res = {
             status: 400,
-            body: { error: "Please provide a URL in the request body" }
+            body: { error: "Please provide a URL in the request query" }
         };
         return;
     }
 
-    const startUrl = req.body.url;
-    const maxDepth = req.body.maxDepth || 3;
-    const maxPages = req.body.maxPages || 20;
+    const maxDepth = req.query.maxDepth || 3;
+    const maxPages = req.query.maxPages || 20;
 
     // Set up the SSE headers
     context.res = {
@@ -41,7 +20,8 @@ export default async function (context, req) {
         headers: {
             'Content-Type': 'text/event-stream',
             'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive'
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*'  // Add this for CORS support
         },
     };
 
